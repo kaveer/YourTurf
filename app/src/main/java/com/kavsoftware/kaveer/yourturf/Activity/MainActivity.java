@@ -21,8 +21,10 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
+import com.kavsoftware.kaveer.yourturf.Fragment.RaceCard;
 import com.kavsoftware.kaveer.yourturf.R;
-import com.kavsoftware.kaveer.yourturf.ViewModel.Greeting;
+import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreenViewModel;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         SetFullScreenON();
         setContentView(R.layout.activity_main);
+
 
         DisplayDrawerOn();
         NavigationViewON();
@@ -62,15 +65,15 @@ public class MainActivity extends AppCompatActivity
         bar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
-    private class GetHomeScreenFromApi extends AsyncTask<Void, Void, Greeting> {
+    private class GetHomeScreenFromApi extends AsyncTask<Void, Void, HomeScreenViewModel> {
         @Override
-        protected Greeting doInBackground(Void... params) {
+        protected HomeScreenViewModel doInBackground(Void... params) {
             try {
-                final String url = "http://rest-service.guides.spring.io/greeting";
+                final String url = getBaseContext().getResources().getString(R.string.GetHomeScreenFromApEndPoint); //endpoint in string.xml
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                Greeting greeting = restTemplate.getForObject(url, Greeting.class);
-                return greeting;
+                HomeScreenViewModel home = restTemplate.getForObject(url, HomeScreenViewModel.class);
+                return home;
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
                 Toast messageBox = Toast.makeText(MainActivity.this , e.getMessage(), Toast.LENGTH_LONG);
@@ -91,12 +94,22 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        protected void onPostExecute(Greeting greeting) {
+        protected void onPostExecute(HomeScreenViewModel home) {
 
             bar.setVisibility(View.GONE);
 
-            Toast messageBox = Toast.makeText(MainActivity.this , greeting.getContent() , Toast.LENGTH_LONG);
-            messageBox.show();
+            if (home.getIsRaceCardAvailable() == true){
+                RaceCard fragment = new  RaceCard();
+                android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+                fmTransaction.replace(R.id.MainFrameLayout, fragment);
+                fmTransaction.commit();
+            }
+            else {
+                Nomination fragment = new  Nomination();
+                android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+                fmTransaction.replace(R.id.MainFrameLayout, fragment);
+                fmTransaction.commit();
+            }
         }
 
     }
@@ -131,13 +144,6 @@ public class MainActivity extends AppCompatActivity
     private void SetFullScreenON() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-    }
-
-    private void NavigateToFragment(){
-//        VehicleDetailsFragment fragment = new  VehicleDetailsFragment();
-//        android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
-//        fmTransaction.replace(R.id.MainFrameLayout, fragment);
-//        fmTransaction.commit();
     }
 
     @Override
@@ -183,18 +189,16 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.Home) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.nav_RaceCard) {
+            RaceCard fragment = new  RaceCard();
+            android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+            fmTransaction.replace(R.id.MainFrameLayout, fragment);
+            fmTransaction.commit();
+        } else if (id == R.id.nav_Nomination) {
+            Nomination fragment = new  Nomination();
+            android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+            fmTransaction.replace(R.id.MainFrameLayout, fragment);
+            fmTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

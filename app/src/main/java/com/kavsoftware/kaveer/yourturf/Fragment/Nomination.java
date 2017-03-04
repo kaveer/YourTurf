@@ -23,8 +23,16 @@ public class Nomination extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_nomination, container, false);
+        getActivity().setTitle("Nomination");
+
+        View view = inflater.inflate(R.layout.fragment_nomination, container, false);
+
+
+
+
+        return view;
     }
+
+
 
 }
