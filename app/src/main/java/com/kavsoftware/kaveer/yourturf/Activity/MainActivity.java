@@ -1,6 +1,9 @@
 package com.kavsoftware.kaveer.yourturf.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,8 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.kavsoftware.kaveer.yourturf.R;
@@ -25,6 +30,8 @@ import org.springframework.web.client.RestTemplate;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    ProgressBar bar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,16 +41,28 @@ public class MainActivity extends AppCompatActivity
         DisplayDrawerOn();
         NavigationViewON();
 
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        new HttpRequestTask().execute();
+
+        Initialization();
+
+        if(isNetworkConnected()){
+            new GetHomeScreenFromApi().execute();
+        }
+        else {
+            Toast messageBox = Toast.makeText(this , "No internet connection" , Toast.LENGTH_LONG);
+            messageBox.show();
+        }
     }
 
-    private class HttpRequestTask extends AsyncTask<Void, Void, Greeting> {
+    private void Initialization() {
+        bar = (ProgressBar) findViewById(R.id.progressBar);
+    }
+
+    private class GetHomeScreenFromApi extends AsyncTask<Void, Void, Greeting> {
         @Override
         protected Greeting doInBackground(Void... params) {
             try {
@@ -54,6 +73,8 @@ public class MainActivity extends AppCompatActivity
                 return greeting;
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
+                Toast messageBox = Toast.makeText(MainActivity.this , e.getMessage(), Toast.LENGTH_LONG);
+                messageBox.show();
             }
 
             return null;
@@ -62,19 +83,34 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast messageBox = Toast.makeText(MainActivity.this , "calling api" , Toast.LENGTH_LONG);
+
+            bar.setVisibility(View.VISIBLE);
+
+            Toast messageBox = Toast.makeText(MainActivity.this , "Loading please wait.." , Toast.LENGTH_LONG);
             messageBox.show();
         }
 
         @Override
         protected void onPostExecute(Greeting greeting) {
 
+            bar.setVisibility(View.GONE);
+
             Toast messageBox = Toast.makeText(MainActivity.this , greeting.getContent() , Toast.LENGTH_LONG);
             messageBox.show();
-
-
         }
 
+    }
+
+    protected boolean isNetworkConnected() {
+        try {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            return (mNetworkInfo == null) ? false : true;
+
+        }catch (NullPointerException e){
+            return false;
+
+        }
     }
 
     private void NavigationViewON() {
@@ -97,7 +133,12 @@ public class MainActivity extends AppCompatActivity
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
-
+    private void NavigateToFragment(){
+//        VehicleDetailsFragment fragment = new  VehicleDetailsFragment();
+//        android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+//        fmTransaction.replace(R.id.MainFrameLayout, fragment);
+//        fmTransaction.commit();
+    }
 
     @Override
     public void onBackPressed() {
