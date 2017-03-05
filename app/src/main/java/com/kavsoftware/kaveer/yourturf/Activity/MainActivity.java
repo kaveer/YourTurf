@@ -15,10 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
@@ -31,8 +29,6 @@ import org.springframework.web.client.RestTemplate;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    ProgressBar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +46,23 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        Initialization();
+        if(isNetworkConnected()){
+            new GetHomeScreenFromApi().execute();
+        }
+        else {
+            Toast messageBox = Toast.makeText(this , "No internet connection" , Toast.LENGTH_LONG);
+            messageBox.show();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         if(isNetworkConnected()){
             new GetHomeScreenFromApi().execute();
@@ -61,8 +73,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void Initialization() {
-        bar = (ProgressBar) findViewById(R.id.progressBar);
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     private class GetHomeScreenFromApi extends AsyncTask<Void, Void, HomeScreenViewModel> {
@@ -87,16 +105,12 @@ public class MainActivity extends AppCompatActivity
         protected void onPreExecute() {
             super.onPreExecute();
 
-            bar.setVisibility(View.VISIBLE);
-
             Toast messageBox = Toast.makeText(MainActivity.this , "Loading please wait.." , Toast.LENGTH_LONG);
             messageBox.show();
         }
 
         @Override
         protected void onPostExecute(HomeScreenViewModel home) {
-
-            bar.setVisibility(View.GONE);
 
             if (home.getIsRaceCardAvailable() == true){
                 RaceCard fragment = new  RaceCard();
