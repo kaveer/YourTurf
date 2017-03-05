@@ -10,4 +10,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     
     <string name="GetHomeScreenFromApEndPoint">http://lekourse.azurewebsites.net/v1/help</string>
+    <string name="GetNominationFromApEndPointTEST">http://lekourse.azurewebsites.net/v1/nominations/5</string>
+
 </resources>
