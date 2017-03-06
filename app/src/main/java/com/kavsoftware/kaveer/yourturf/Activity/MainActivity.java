@@ -24,11 +24,24 @@ import com.kavsoftware.kaveer.yourturf.Fragment.RaceCard;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreenViewModel;
 
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    HomeScreenViewModel home = new HomeScreenViewModel();
+    HttpURLConnection connection = null;
+    BufferedReader reader = null;
+    String line ="";
+    String jsonObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +53,6 @@ public class MainActivity extends AppCompatActivity
         DisplayDrawerOn();
         NavigationViewON();
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
         if(isNetworkConnected()){
             new GetHomeScreenFromApi().execute();
         }
@@ -53,6 +60,13 @@ public class MainActivity extends AppCompatActivity
             Toast messageBox = Toast.makeText(this , "No internet connection" , Toast.LENGTH_LONG);
             messageBox.show();
         }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -83,49 +97,89 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
     }
 
-    private class GetHomeScreenFromApi extends AsyncTask<Void, Void, HomeScreenViewModel> {
+    private class GetHomeScreenFromApi extends AsyncTask<Void, Void, String> {
         @Override
-        protected HomeScreenViewModel doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
             try {
-                final String url = getBaseContext().getResources().getString(R.string.GetHomeScreenFromApEndPoint); //endpoint in string.xml
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                HomeScreenViewModel home = restTemplate.getForObject(url, HomeScreenViewModel.class);
-                return home;
+                URL url = new URL(getBaseContext().getResources().getString(R.string.GetHomeScreenFromApEndPoint));
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                StringBuffer buffer = new StringBuffer();
+
+                while ((line = reader.readLine()) != null){
+                    buffer.append(line);
+                }
+
+                jsonObject = buffer.toString();
+
             } catch (Exception e) {
+
                 Log.e("MainActivity", e.getMessage(), e);
-                Toast messageBox = Toast.makeText(MainActivity.this , e.getMessage(), Toast.LENGTH_LONG);
-                messageBox.show();
+
+            } finally {
+                if(connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if(reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
-            return null;
+            return jsonObject;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
-            Toast messageBox = Toast.makeText(MainActivity.this , "Loading please wait.." , Toast.LENGTH_LONG);
+            Toast messageBox = Toast.makeText(MainActivity.this , "Loading please wait.." , Toast.LENGTH_SHORT);
             messageBox.show();
         }
 
         @Override
-        protected void onPostExecute(HomeScreenViewModel home) {
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            try {
+                JSONObject parentObject = new JSONObject(result);
+                home.setIsRaceCardAvailable(parentObject.getBoolean("isRaceCardAvailable"));
+                home.setMeetingNumber(parentObject.getInt("meetingNumber"));
 
-            if (home.getIsRaceCardAvailable() == true){
-                RaceCard fragment = new  RaceCard();
-                android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
-                fmTransaction.replace(R.id.MainFrameLayout, fragment);
-                fmTransaction.commit();
+                home.setIsRaceCardAvailable(false);
+
+                if (home.getIsRaceCardAvailable() == true){
+                    RaceCard fragment = new  RaceCard();
+                    fragment.setArguments(PassValueToFragment(home.getMeetingNumber()));
+                    android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+                    fmTransaction.replace(R.id.MainFrameLayout, fragment);
+                    fmTransaction.commit();
+               }
+               else {
+                    Nomination fragment = new  Nomination();
+                    fragment.setArguments(PassValueToFragment(home.getMeetingNumber()));
+                    android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+                    fmTransaction.replace(R.id.MainFrameLayout, fragment);
+                    fmTransaction.commit();
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            else {
-                Nomination fragment = new  Nomination();
-                android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
-                fmTransaction.replace(R.id.MainFrameLayout, fragment);
-                fmTransaction.commit();
-            }
+
         }
 
+    }
+
+    private Bundle PassValueToFragment(Integer meetingNumber) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", meetingNumber);
+
+        return bundle;
     }
 
     protected boolean isNetworkConnected() {
