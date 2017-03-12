@@ -52,7 +52,7 @@ public class Nomination extends Fragment {
 
         String result = GetNomination();
         if(result == ""){
-            Toast messageBox = Toast.makeText(getActivity() , "No nomination to display please check race card" , Toast.LENGTH_LONG);
+            Toast messageBox = Toast.makeText(getActivity() , "No nomination available please check race card" , Toast.LENGTH_LONG);
             messageBox.show();
         }
         else {

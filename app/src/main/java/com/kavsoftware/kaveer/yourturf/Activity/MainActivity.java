@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
                 home.setIsRaceCardAvailable(parentObject.getBoolean("isRaceCardAvailable"));
                 home.setMeetingNumber(parentObject.getInt("meetingNumber"));
 
-                home.setIsRaceCardAvailable(false);
+               // home.setIsRaceCardAvailable(false);
 
                 if (home.getIsRaceCardAvailable() == true){
                     RaceCard fragment = new  RaceCard();

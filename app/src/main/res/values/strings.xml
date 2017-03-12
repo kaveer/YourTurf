@@ -11,5 +11,6 @@
     
     <string name="GetHomeScreenFromApEndPoint">http://lekourse.azurewebsites.net/v1/help</string>
     <string name="GetNominationFromApEndPoint">http://lekourse.azurewebsites.net/v1/nominations/</string>
+    <string name="GetRaceCardFromApEndPoint">http://lekourse.azurewebsites.net/v1/nominations/</string>
 
 </resources>
