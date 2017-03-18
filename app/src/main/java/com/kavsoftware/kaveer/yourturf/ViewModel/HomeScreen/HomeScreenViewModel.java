@@ -1,4 +1,4 @@
-package com.kavsoftware.kaveer.yourturf.ViewModel;
+package com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen;
 
 /**
  * Created by kaveer on 3/4/2017.

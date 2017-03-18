@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.kavsoftware.kaveer.yourturf.R;
-import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreenViewModel;
-import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.NominationViewModel;
-import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.Race;
-import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.RaceHorse;
+import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.Race;
+import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.RaceCardViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.RaceHorse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 public class RaceCard extends Fragment {
     HttpURLConnection connection = null;
     BufferedReader reader = null;
-    NominationViewModel nomination = new NominationViewModel();
+    RaceCardViewModel raceCard = new RaceCardViewModel();
     String homeUrl;
     String raceCardUrl;
 
@@ -73,7 +73,7 @@ public class RaceCard extends Fragment {
     }
 
     private void GenerateListView() {
-        for (Race item: nomination.getRace()) {
+        for (Race item: raceCard.getRace()) {
             Log.e("=========Race=======",item.getRaceName());
             for (RaceHorse items: item.getRaceHorses()) {
                 Log.e("horseName", items.getHorseName());
@@ -84,47 +84,53 @@ public class RaceCard extends Fragment {
     private void DeserializeJsonObject(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            JSONArray raceArray = jsonObject.getJSONArray("race");
+            JSONArray raceDetailsObject = jsonObject.getJSONArray("race");
 
-            nomination.setRaceCount(jsonObject.getInt("raceCount"));
+            raceCard.setRaceCount(jsonObject.getInt("raceCount"));
 
             List<Race> races = new ArrayList<>();
-            List<RaceHorse> raceHorses = new ArrayList<>();
 
-            for(int i=0; i<raceArray.length(); i++) {
-                JSONObject raceObject = raceArray.getJSONObject(i);
-                JSONArray raceHorsesArray = raceObject.getJSONArray("raceHorses");
+            for(int i=0; i<raceDetailsObject.length(); i++) {
+                JSONObject raceObject = raceDetailsObject.getJSONObject(i);
+                JSONArray raceHorseDetailsObject = raceObject.getJSONArray("raceHorses");
 
-                Race item = new Race();
+                Race raceDetails = new Race();
+                List<RaceHorse> raceHorses = new ArrayList<>();
 
-                item.setRaceNumber(raceObject.getInt("raceNumber"));
-                item.setDistance(raceObject.getString("distance"));
-                item.setValueBenchmark(raceObject.getString("valueBenchmark"));
-                item.setTime(raceObject.getString("time"));
-                item.setRaceName(raceObject.getString("raceName"));
-                item.setHorseCount(raceObject.getInt("horseCount"));
+                raceDetails.setRaceNumber(raceObject.getInt("raceNumber"));
+                raceDetails.setDistance(raceObject.getString("distance"));
+                raceDetails.setValueBenchmark(raceObject.getString("valueBenchmark"));
+                raceDetails.setTime(raceObject.getString("time"));
+                raceDetails.setRaceName(raceObject.getString("raceName"));
+                raceDetails.setHorseCount(raceObject.getInt("horseCount"));
 
-                for(int count=0;count<raceHorsesArray.length();count++){
-                    JSONObject raceHorseObject = raceHorsesArray.getJSONObject(count);
-                    RaceHorse items = new RaceHorse();
+                for(int count=0;count<raceHorseDetailsObject.length();count++){
+                    JSONObject raceHorseObject = raceHorseDetailsObject.getJSONObject(count);
+                    RaceHorse raceHorseDetails = new RaceHorse();
 
-                    items.setHorseName(raceHorseObject.getString("horseName"));
-                    items.setHorseNumber(raceHorseObject.getInt("horseNumber"));
-                    items.setStable(raceHorseObject.getString("stable"));
-                    items.setHandicap(raceHorseObject.getInt("handicap"));
-                    items.setValue(raceHorseObject.getInt("value"));
-                    items.setRaceNumber(raceHorseObject.getInt("raceNumber"));
+                    raceHorseDetails.setPerf(raceHorseObject.getString("perf"));
+                    raceHorseDetails.setAge(raceHorseObject.getInt("age"));
+                    raceHorseDetails.setGear(raceHorseObject.getString("gear"));
+                    raceHorseDetails.setWeight(raceHorseObject.getString("weight"));
+                    raceHorseDetails.setJockey(raceHorseObject.getString("jockey"));
+                    raceHorseDetails.setDraw(raceHorseObject.getInt("draw"));
+                    raceHorseDetails.setTimeFactor(raceHorseObject.getString("timeFactor"));
+                    raceHorseDetails.setHorseName(raceHorseObject.getString("horseName"));
+                    raceHorseDetails.setHorseNumber(raceHorseObject.getInt("horseNumber"));
+                    raceHorseDetails.setStable(raceHorseObject.getString("stable"));
+                    //raceHorseDetails.setHandicap(raceHorseObject.getInt("handicap"));
+                   // raceHorseDetails.setValue(raceHorseObject.getInt("value"));
+                    raceHorseDetails.setRaceNumber(raceHorseObject.getInt("raceNumber"));
 
-                    raceHorses.add(items);
+                    raceHorses.add(raceHorseDetails);
                 }
-                item.setRaceHorses(raceHorses);
-
-                races.add(item);
+                raceDetails.setRaceHorses(raceHorses);
+                races.add(raceDetails);
             }
 
-            nomination.setRace(races);
+            raceCard.setRace(races);
 
-            System.out.print(nomination);
+            System.out.print(raceCard);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -276,7 +282,8 @@ public class RaceCard extends Fragment {
                 home.setIsRaceCardAvailable(parentObject.getBoolean("isRaceCardAvailable"));
                 home.setMeetingNumber(parentObject.getInt("meetingNumber"));
 
-                // home.setIsRaceCardAvailable(true);
+                 home.setIsRaceCardAvailable(true);
+                //to remove
 
                 if(home.getIsRaceCardAvailable() == true){
 

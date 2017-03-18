@@ -11,11 +11,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.kavsoftware.kaveer.yourturf.R;
-import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreenViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.NominationViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.Race;
+import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.RaceHorse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -24,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -33,9 +43,10 @@ public class Nomination extends Fragment {
 
     HttpURLConnection connection = null;
     BufferedReader reader = null;
-
+    NominationViewModel nomination = new NominationViewModel();
     String homeUrl;
     String nominationUrl;
+    ListView nominationListView;
 
     public Nomination() {
         // Required empty public constructor
@@ -45,6 +56,7 @@ public class Nomination extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getActivity().setTitle("Nomination");
+
         View view = inflater.inflate(R.layout.fragment_nomination, container, false);
 
         homeUrl = getActivity().getBaseContext().getResources().getString(R.string.GetHomeScreenFromApEndPoint);
@@ -52,15 +64,112 @@ public class Nomination extends Fragment {
 
         String result = GetNomination();
         if(result == ""){
-            Toast messageBox = Toast.makeText(getActivity() , "No nomination available please check race card" , Toast.LENGTH_LONG);
+            Toast messageBox = Toast.makeText(getActivity() , "No raceCard available please check race card" , Toast.LENGTH_LONG);
             messageBox.show();
         }
         else {
-            Toast messageBox = Toast.makeText(getActivity() , result , Toast.LENGTH_LONG);
-            messageBox.show();
+            DeserializeJsonObject(result);
+
+            GenerateListView(view);
         }
 
+
+
         return view;
+    }
+
+    private void GenerateListView(View view) {
+        String[] values = new String[nomination.getRaceCount()];
+        int count = 0;
+        
+        for (Race item: nomination.getRace()) {
+            values[count] = item.getRaceName();
+            count ++;
+            //Log.e("=========Race=======",item.getRaceName());
+//            for (RaceHorse items: item.getRaceHorses()) {
+//                Log.e("horseName", items.getHorseName());
+//            }
+        }
+
+        nominationListView = (ListView)view.findViewById(R.id.ListViewNomination);
+        ArrayAdapter adapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_list_item_1, values);
+        nominationListView.setAdapter(adapter);
+
+        OnClickNominationListView();
+
+    }
+
+    private void OnClickNominationListView() {
+        nominationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) nominationListView.getItemAtPosition(position);
+
+                // Show Alert
+
+                Toast messageBox = Toast.makeText(getActivity() , +itemPosition+ "Insurance removed" +itemValue  , Toast.LENGTH_SHORT);
+                messageBox.show();
+
+
+            }
+
+        });
+    }
+
+    private void DeserializeJsonObject(String result) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray raceArray = jsonObject.getJSONArray("race");
+
+            nomination.setRaceCount(jsonObject.getInt("raceCount"));
+
+            List<Race> raceList = new ArrayList<>();
+
+            for(int i=0; i<raceArray.length(); i++) {
+                JSONObject raceObject = raceArray.getJSONObject(i);
+                JSONArray raceHorsesArray = raceObject.getJSONArray("raceHorses");
+
+                Race item = new Race();
+                List<RaceHorse> raceHorseList = new ArrayList<>();
+
+                item.setRaceNumber(raceObject.getInt("raceNumber"));
+                item.setDistance(raceObject.getString("distance"));
+                item.setValueBenchmark(raceObject.getString("valueBenchmark"));
+                item.setTime(raceObject.getString("time"));
+                item.setRaceName(raceObject.getString("raceName"));
+                item.setHorseCount(raceObject.getInt("horseCount"));
+
+                for(int count=0;count<raceHorsesArray.length();count++){
+                    JSONObject raceHorseObject = raceHorsesArray.getJSONObject(count);
+                    RaceHorse items = new RaceHorse();
+
+                    items.setHorseName(raceHorseObject.getString("horseName"));
+                    items.setHorseNumber(raceHorseObject.getInt("horseNumber"));
+                    items.setStable(raceHorseObject.getString("stable"));
+                   // items.setHandicap(raceHorseObject.getInt("handicap"));
+                   // items.setValue(raceHorseObject.getInt("value"));
+                    items.setRaceNumber(raceHorseObject.getInt("raceNumber"));
+
+                    raceHorseList.add(items);
+                }
+
+                item.setRaceHorses(raceHorseList);
+                raceList.add(item);
+            }
+
+            nomination.setRace(raceList);
+
+            System.out.print(nomination.getRaceCount());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private String GetNomination() {

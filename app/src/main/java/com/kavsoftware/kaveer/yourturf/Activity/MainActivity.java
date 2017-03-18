@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
 import com.kavsoftware.kaveer.yourturf.Fragment.RaceCard;
 import com.kavsoftware.kaveer.yourturf.R;
-import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreenViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
                 home.setIsRaceCardAvailable(parentObject.getBoolean("isRaceCardAvailable"));
                 home.setMeetingNumber(parentObject.getInt("meetingNumber"));
 
-               // home.setIsRaceCardAvailable(false);
+                home.setIsRaceCardAvailable(true);
 
                 if (home.getIsRaceCardAvailable() == true){
                     RaceCard fragment = new  RaceCard();
