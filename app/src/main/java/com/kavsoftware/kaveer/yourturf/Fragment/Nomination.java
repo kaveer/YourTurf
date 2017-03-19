@@ -2,6 +2,7 @@ package com.kavsoftware.kaveer.yourturf.Fragment;
 
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -11,11 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.kavsoftware.kaveer.yourturf.CustomListView.CustomAdapter;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
 import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.NominationViewModel;
@@ -33,7 +33,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -43,10 +42,16 @@ public class Nomination extends Fragment {
 
     HttpURLConnection connection = null;
     BufferedReader reader = null;
-    NominationViewModel nomination = new NominationViewModel();
+    NominationViewModel nominationTest = new NominationViewModel();
     String homeUrl;
     String nominationUrl;
+
     ListView nominationListView;
+
+    CustomAdapter adapter;
+
+    public Nomination nnn = null;
+
 
     public Nomination() {
         // Required empty public constructor
@@ -63,8 +68,11 @@ public class Nomination extends Fragment {
         nominationUrl = getActivity().getBaseContext().getResources().getString(R.string.GetNominationFromApEndPoint);
 
         String result = GetNomination();
+
+        nnn = this;
+
         if(result == ""){
-            Toast messageBox = Toast.makeText(getActivity() , "No raceCard available please check race card" , Toast.LENGTH_LONG);
+            Toast messageBox = Toast.makeText(getActivity() , "No nomination available" , Toast.LENGTH_LONG);
             messageBox.show();
         }
         else {
@@ -79,48 +87,73 @@ public class Nomination extends Fragment {
     }
 
     private void GenerateListView(View view) {
-        String[] values = new String[nomination.getRaceCount()];
+        String[] values = new String[nominationTest.getRaceCount()];
         int count = 0;
         
-        for (Race item: nomination.getRace()) {
-            values[count] = item.getRaceName();
-            count ++;
-            //Log.e("=========Race=======",item.getRaceName());
-//            for (RaceHorse items: item.getRaceHorses()) {
-//                Log.e("horseName", items.getHorseName());
-//            }
-        }
+//        for (Race item: nominationTest.getRace()) {
+//            values[count] = item.getRaceNumber()
+//                    + " " + item.getRaceName()
+//                    + " distance" + item.getDistance()
+//                    + " time" + item.getTime()
+//                    + " horse" + item.horseCount
+//                    + "value Benchmark" + item.getValueBenchmark();
+//            count ++;
+//            //Log.e("=========Race=======",item.getRaceName());
+////            for (RaceHorse items: item.getRaceHorses()) {
+////                Log.e("horseName", items.getHorseName());
+////            }
+//        }
 
+        Resources res =getResources();
         nominationListView = (ListView)view.findViewById(R.id.ListViewNomination);
-        ArrayAdapter adapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_list_item_1, values);
-        nominationListView.setAdapter(adapter);
 
-        OnClickNominationListView();
+       // ArrayAdapter adapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_list_item_1, values);
+       // nominationListView.setAdapter(adapter);
+
+
+        adapter = new CustomAdapter(getActivity(), nominationTest.getRace() ,res);
+        nominationListView.setAdapter( adapter );
+
 
     }
 
-    private void OnClickNominationListView() {
-        nominationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                // ListView Clicked item index
-                int itemPosition     = position;
-
-                // ListView Clicked item value
-                String  itemValue    = (String) nominationListView.getItemAtPosition(position);
-
-                // Show Alert
-
-                Toast messageBox = Toast.makeText(getActivity() , +itemPosition+ "Insurance removed" +itemValue  , Toast.LENGTH_SHORT);
-                messageBox.show();
+    public void onItemClick(int mPosition, ArrayList data)
+    {
+        //ListModel tempValues = ( ListModel ) CustomListViewValuesArr.get(mPosition);
 
 
-            }
+        // SHOW ALERT
 
-        });
+      Object n = data.get(mPosition);
+
+
+       // Toast.makeText(nnn.getActivity(), "sadfcsdf", Toast.LENGTH_LONG).show();
+
+        int f = mPosition;
+    }
+
+    public void OnClickNominationListView() {
+//        nominationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view,
+//                                    int position, long id) {
+//
+//                // ListView Clicked item index
+//                int itemPosition     = position;
+//
+//                // ListView Clicked item value
+//                String  itemValue    = (String) nominationListView.getItemAtPosition(position);
+//
+//                // Show Alert
+//
+//                Toast messageBox = Toast.makeText(getActivity() , +itemPosition+ "Insurance removed" +itemValue  , Toast.LENGTH_SHORT);
+//                messageBox.show();
+//
+//
+//            }
+//
+//        });
     }
 
     private void DeserializeJsonObject(String result) {
@@ -128,16 +161,16 @@ public class Nomination extends Fragment {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray raceArray = jsonObject.getJSONArray("race");
 
-            nomination.setRaceCount(jsonObject.getInt("raceCount"));
+            nominationTest.setRaceCount(jsonObject.getInt("raceCount"));
 
-            List<Race> raceList = new ArrayList<>();
+            ArrayList<Race> raceList = new ArrayList<>();
 
             for(int i=0; i<raceArray.length(); i++) {
                 JSONObject raceObject = raceArray.getJSONObject(i);
                 JSONArray raceHorsesArray = raceObject.getJSONArray("raceHorses");
 
                 Race item = new Race();
-                List<RaceHorse> raceHorseList = new ArrayList<>();
+                ArrayList<RaceHorse> raceHorseList = new ArrayList<>();
 
                 item.setRaceNumber(raceObject.getInt("raceNumber"));
                 item.setDistance(raceObject.getString("distance"));
@@ -164,9 +197,9 @@ public class Nomination extends Fragment {
                 raceList.add(item);
             }
 
-            nomination.setRace(raceList);
+            nominationTest.setRace(raceList);
 
-            System.out.print(nomination.getRaceCount());
+            System.out.print(nominationTest.getRaceCount());
         } catch (JSONException e) {
             e.printStackTrace();
         }
