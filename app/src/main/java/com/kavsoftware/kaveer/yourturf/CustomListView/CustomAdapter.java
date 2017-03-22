@@ -1,7 +1,6 @@
 package com.kavsoftware.kaveer.yourturf.CustomListView;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
 import com.kavsoftware.kaveer.yourturf.R;
-import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.NominationViewModel;
 import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.Race;
 
 import java.util.ArrayList;
@@ -25,12 +23,9 @@ import java.util.ArrayList;
 public class CustomAdapter extends BaseAdapter implements View.OnClickListener {
 
     private Activity activity;
-    private Fragment fragment;
     private ArrayList data;
     private static LayoutInflater inflater=null;
     public Resources res;
-    public NominationViewModel nomination = null;
-    int i=0;
 
     public CustomAdapter(Activity a, ArrayList d,Resources resLocal) {
 

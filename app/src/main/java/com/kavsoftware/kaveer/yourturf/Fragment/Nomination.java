@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.kavsoftware.kaveer.yourturf.CustomListView.CustomAdapter;
+import com.kavsoftware.kaveer.yourturf.CustomListView.NonimationListView.NominationListView;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
 import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.NominationViewModel;
@@ -42,16 +42,13 @@ public class Nomination extends Fragment {
 
     HttpURLConnection connection = null;
     BufferedReader reader = null;
-    NominationViewModel nominationTest = new NominationViewModel();
+    NominationViewModel nominationList = new NominationViewModel();
     String homeUrl;
     String nominationUrl;
 
     ListView nominationListView;
 
-    CustomAdapter adapter;
-
-    public Nomination nnn = null;
-
+    NominationListView adapter;
 
     public Nomination() {
         // Required empty public constructor
@@ -69,8 +66,6 @@ public class Nomination extends Fragment {
 
         String result = GetNomination();
 
-        nnn = this;
-
         if(result == ""){
             Toast messageBox = Toast.makeText(getActivity() , "No nomination available" , Toast.LENGTH_LONG);
             messageBox.show();
@@ -87,31 +82,11 @@ public class Nomination extends Fragment {
     }
 
     private void GenerateListView(View view) {
-        String[] values = new String[nominationTest.getRaceCount()];
-        int count = 0;
-        
-//        for (Race item: nominationTest.getRace()) {
-//            values[count] = item.getRaceNumber()
-//                    + " " + item.getRaceName()
-//                    + " distance" + item.getDistance()
-//                    + " time" + item.getTime()
-//                    + " horse" + item.horseCount
-//                    + "value Benchmark" + item.getValueBenchmark();
-//            count ++;
-//            //Log.e("=========Race=======",item.getRaceName());
-////            for (RaceHorse items: item.getRaceHorses()) {
-////                Log.e("horseName", items.getHorseName());
-////            }
-//        }
 
-        Resources res =getResources();
+        Resources res = getResources();
         nominationListView = (ListView)view.findViewById(R.id.ListViewNomination);
 
-       // ArrayAdapter adapter = new ArrayAdapter(this.getContext(), android.R.layout.simple_list_item_1, values);
-       // nominationListView.setAdapter(adapter);
-
-
-        adapter = new CustomAdapter(getActivity(), nominationTest.getRace() ,res);
+        adapter = new NominationListView(getActivity(), nominationList.getRace() ,res);
         nominationListView.setAdapter( adapter );
 
 
@@ -119,49 +94,19 @@ public class Nomination extends Fragment {
 
     public void onItemClick(int mPosition, ArrayList data)
     {
-        //ListModel tempValues = ( ListModel ) CustomListViewValuesArr.get(mPosition);
-
-
-        // SHOW ALERT
-
-      Object n = data.get(mPosition);
-
-
-       // Toast.makeText(nnn.getActivity(), "sadfcsdf", Toast.LENGTH_LONG).show();
+        Object n = data.get(mPosition);
 
         int f = mPosition;
     }
 
-    public void OnClickNominationListView() {
-//        nominationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view,
-//                                    int position, long id) {
-//
-//                // ListView Clicked item index
-//                int itemPosition     = position;
-//
-//                // ListView Clicked item value
-//                String  itemValue    = (String) nominationListView.getItemAtPosition(position);
-//
-//                // Show Alert
-//
-//                Toast messageBox = Toast.makeText(getActivity() , +itemPosition+ "Insurance removed" +itemValue  , Toast.LENGTH_SHORT);
-//                messageBox.show();
-//
-//
-//            }
-//
-//        });
-    }
+
 
     private void DeserializeJsonObject(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray raceArray = jsonObject.getJSONArray("race");
 
-            nominationTest.setRaceCount(jsonObject.getInt("raceCount"));
+            nominationList.setRaceCount(jsonObject.getInt("raceCount"));
 
             ArrayList<Race> raceList = new ArrayList<>();
 
@@ -197,9 +142,9 @@ public class Nomination extends Fragment {
                 raceList.add(item);
             }
 
-            nominationTest.setRace(raceList);
+            nominationList.setRace(raceList);
 
-            System.out.print(nominationTest.getRaceCount());
+            System.out.print(nominationList.getRaceCount());
         } catch (JSONException e) {
             e.printStackTrace();
         }

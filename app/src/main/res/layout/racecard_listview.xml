@@ -7,11 +7,11 @@
               android:layout_height="match_parent">
 
     <!--<ImageView-->
-        <!--android:id="@+id/testImg"-->
-        <!--android:layout_width="50dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_margin="5dp"-->
-        <!--android:src="@drawable/images" />-->
+    <!--android:id="@+id/testImg"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:layout_margin="5dp"-->
+    <!--android:src="@drawable/images" />-->
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"

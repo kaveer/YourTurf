@@ -1,6 +1,6 @@
 package com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by kaveer on 3/18/2017.
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RaceCardViewModel {
     public Integer raceCount;
-    public List<Race> race = null;
+    public ArrayList<Race> race = null;
 
     public Integer getRaceCount() {
         return raceCount;
@@ -18,11 +18,11 @@ public class RaceCardViewModel {
         this.raceCount = raceCount;
     }
 
-    public List<Race> getRace() {
+    public ArrayList<Race> getRace() {
         return race;
     }
 
-    public void setRace(List<Race> race) {
+    public void setRace(ArrayList<Race> race) {
         this.race = race;
     }
 }

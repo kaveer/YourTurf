@@ -6,9 +6,10 @@
              tools:context="com.kavsoftware.kaveer.yourturf.Fragment.RaceCard">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <ListView
+        android:id="@+id/ListViewRaceCard"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Race card"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

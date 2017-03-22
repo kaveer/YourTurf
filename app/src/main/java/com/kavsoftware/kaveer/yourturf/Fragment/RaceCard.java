@@ -2,6 +2,7 @@ package com.kavsoftware.kaveer.yourturf.Fragment;
 
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -11,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.kavsoftware.kaveer.yourturf.CustomListView.RaceCardListView.RaceCardListView;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
 import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.Race;
@@ -30,7 +33,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -39,9 +41,13 @@ import java.util.concurrent.ExecutionException;
 public class RaceCard extends Fragment {
     HttpURLConnection connection = null;
     BufferedReader reader = null;
-    RaceCardViewModel raceCard = new RaceCardViewModel();
+    RaceCardViewModel raceCardList = new RaceCardViewModel();
     String homeUrl;
     String raceCardUrl;
+
+    ListView raceCardListView;
+
+    RaceCardListView adapter;
 
     public RaceCard() {
         // Required empty public constructor
@@ -65,20 +71,26 @@ public class RaceCard extends Fragment {
         else {
             DeserializeJsonObject(result);
 
-            GenerateListView();
+            GenerateListView(view);
             
         }
 
         return view;
     }
 
-    private void GenerateListView() {
-        for (Race item: raceCard.getRace()) {
-            Log.e("=========Race=======",item.getRaceName());
-            for (RaceHorse items: item.getRaceHorses()) {
-                Log.e("horseName", items.getHorseName());
-            }
-        }
+    private void GenerateListView(View view) {
+        Resources res = getResources();
+        raceCardListView = (ListView)view.findViewById(R.id.ListViewRaceCard);
+
+        adapter = new RaceCardListView(getActivity(), raceCardList.getRace() ,res);
+        raceCardListView.setAdapter( adapter );
+    }
+
+    public void onItemClick(int mPosition, ArrayList data)
+    {
+        Object n = data.get(mPosition);
+
+        int f = mPosition;
     }
 
     private void DeserializeJsonObject(String result) {
@@ -86,16 +98,16 @@ public class RaceCard extends Fragment {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray raceDetailsObject = jsonObject.getJSONArray("race");
 
-            raceCard.setRaceCount(jsonObject.getInt("raceCount"));
+            raceCardList.setRaceCount(jsonObject.getInt("raceCount"));
 
-            List<Race> races = new ArrayList<>();
+            ArrayList<Race> races = new ArrayList<>();
 
             for(int i=0; i<raceDetailsObject.length(); i++) {
                 JSONObject raceObject = raceDetailsObject.getJSONObject(i);
                 JSONArray raceHorseDetailsObject = raceObject.getJSONArray("raceHorses");
 
                 Race raceDetails = new Race();
-                List<RaceHorse> raceHorses = new ArrayList<>();
+                ArrayList<RaceHorse> raceHorses = new ArrayList<>();
 
                 raceDetails.setRaceNumber(raceObject.getInt("raceNumber"));
                 raceDetails.setDistance(raceObject.getString("distance"));
@@ -128,9 +140,9 @@ public class RaceCard extends Fragment {
                 races.add(raceDetails);
             }
 
-            raceCard.setRace(races);
+            raceCardList.setRace(races);
 
-            System.out.print(raceCard);
+            System.out.print(raceCardList);
 
         } catch (JSONException e) {
             e.printStackTrace();
