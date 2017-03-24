@@ -54,13 +54,35 @@ public class MainActivity extends AppCompatActivity
         NavigationViewON();
 
         if(isNetworkConnected()){
-            new GetHomeScreenFromApi().execute();
+            //new GetHomeScreenFromApi().execute();
+            Intent i = getIntent();
+            home = (HomeScreenViewModel)i.getSerializableExtra("HomeScreenDetails");
+            NavigateToFragment(home);
         }
         else {
             Toast messageBox = Toast.makeText(this , "No internet connection" , Toast.LENGTH_LONG);
             messageBox.show();
         }
 
+
+    }
+
+    private void NavigateToFragment(HomeScreenViewModel home) {
+
+        if (home.getIsRaceCardAvailable() == true){
+            RaceCard fragment = new  RaceCard();
+            fragment.setArguments(PassValueToFragment(home.getMeetingNumber()));
+            android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+            fmTransaction.replace(R.id.MainFrameLayout, fragment);
+            fmTransaction.commit();
+        }
+        else {
+            Nomination fragment = new  Nomination();
+            fragment.setArguments(PassValueToFragment(home.getMeetingNumber()));
+            android.support.v4.app.FragmentTransaction fmTransaction = getSupportFragmentManager().beginTransaction();
+            fmTransaction.replace(R.id.MainFrameLayout, fragment);
+            fmTransaction.commit();
+        }
 
     }
 
@@ -79,7 +101,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         if(isNetworkConnected()){
-            new GetHomeScreenFromApi().execute();
+           // new GetHomeScreenFromApi().execute();
         }
         else {
             Toast messageBox = Toast.makeText(this , "No internet connection" , Toast.LENGTH_LONG);

@@ -1,10 +1,12 @@
 package com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen;
 
+import java.io.Serializable;
+
 /**
  * Created by kaveer on 3/4/2017.
  */
-
-public class HomeScreenViewModel {
+@SuppressWarnings("serial")
+public class HomeScreenViewModel implements Serializable {
     private Boolean isRaceCardAvailable;
     public Integer meetingNumber;
     public Object notificationMessage;
