@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Window;
@@ -28,6 +29,8 @@ import java.util.concurrent.ExecutionException;
 
 public class SplashScreen extends AppCompatActivity {
 
+    private final int SPLASH_DISPLAY_LENGTH = 3000;
+
     HttpURLConnection connection = null;
     BufferedReader reader = null;
     HomeScreenViewModel home = new HomeScreenViewModel();
@@ -46,21 +49,28 @@ public class SplashScreen extends AppCompatActivity {
         String result = "";
 
         if(isNetworkConnected()){
-           result = GetHomeScreenDetails();
+            result = GetHomeScreenDetails();
+
+            if(result == ""){
+                Toast messageBox = Toast.makeText(this , "Error occurred while loading" , Toast.LENGTH_LONG);
+                messageBox.show();
+            }
+            else {
+                home = DeserializeJsonObject(result);
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        NavigateToMainActivity(home);
+                    }
+                }, SPLASH_DISPLAY_LENGTH);
+            }
         }
         else {
             Toast messageBox = Toast.makeText(this , "No internet connection" , Toast.LENGTH_LONG);
             messageBox.show();
         }
 
-        if(result == ""){
-            Toast messageBox = Toast.makeText(this , "Error occurred while loading" , Toast.LENGTH_LONG);
-            messageBox.show();
-        }
-        else {
-            home = DeserializeJsonObject(result);
-            NavigateToMainActivity(home);
-        }
+
 
     }
 

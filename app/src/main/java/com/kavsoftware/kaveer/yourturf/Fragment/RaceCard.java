@@ -86,11 +86,11 @@ public class RaceCard extends Fragment {
         raceCardListView.setAdapter( adapter );
     }
 
-    public void onItemClick(int mPosition, ArrayList data)
-    {
-        Object n = data.get(mPosition);
+    public void onItemClick(int mPosition, ArrayList data) {
+        Object selectedRace = data.get(mPosition);
 
-        int f = mPosition;
+        Race selectedRaceDetails = new Race();
+        selectedRaceDetails = (Race) selectedRace;
     }
 
     private void DeserializeJsonObject(String result) {
