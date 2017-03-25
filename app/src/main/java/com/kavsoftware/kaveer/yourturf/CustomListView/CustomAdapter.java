@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
+import com.kavsoftware.kaveer.yourturf.Fragment.Nomination.Nomination;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.Race;
 

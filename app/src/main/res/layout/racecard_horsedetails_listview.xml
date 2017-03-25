@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_gravity="fill_vertical"
+              android:id="@+id/nominationList"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ImageView
+    android:id="@+id/testImg"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:layout_margin="5dp"
+    android:src="@drawable/horselistview" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="10dp"
+        android:paddingBottom="1dp">
+        <TextView
+            android:id="@+id/RaceNumberAndName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Text"
+            android:textColor="@color/black"
+            android:layout_marginBottom="10dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+        <TextView
+            android:id="@+id/RaceTimeAndDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Text"
+            android:textColor="@color/black"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <TextView
+            android:id="@+id/RaceHorseCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Text"
+            android:textColor="@color/black"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <TextView
+            android:id="@+id/RaceValueBenchMark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Text"
+            android:textColor="@color/black"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+    </LinearLayout>
+</LinearLayout>

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.kavsoftware.kaveer.yourturf.Fragment.RaceCard;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.Race;
 
@@ -105,26 +104,9 @@ public class RaceCardListView extends BaseAdapter implements View.OnClickListene
             holder.nominationHorseCount.setText("Horse count : " + race.getHorseCount());
             holder.nominationBenchMark.setText("Bench mark : " + race.getValueBenchmark());
 
-            view.setOnClickListener(new OnItemClickListener( position ));
         }
 
         return view;
-    }
-
-    private class OnItemClickListener  implements View.OnClickListener {
-        private int mPosition;
-
-        OnItemClickListener(int position){
-            mPosition = position;
-        }
-
-        @Override
-        public void onClick(View arg0) {
-
-            RaceCard raceCard = new RaceCard();
-            raceCard.onItemClick(mPosition, raceList);
-
-        }
     }
 
 }

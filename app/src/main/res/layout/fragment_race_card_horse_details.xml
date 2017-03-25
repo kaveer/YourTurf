@@ -2,12 +2,12 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.kavsoftware.kaveer.yourturf.Fragment.Nomination.Nomination">
+             tools:context="com.kavsoftware.kaveer.yourturf.Fragment.RaceCard.RaceCardHorseDetails">
 
     <!-- TODO: Update blank fragment layout -->
-
     <ListView
-        android:id="@+id/ListViewNomination"
+        android:id="@+id/ListViewRaceCardHorse"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 </FrameLayout>

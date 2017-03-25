@@ -1,4 +1,4 @@
-package com.kavsoftware.kaveer.yourturf.Fragment;
+package com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
 
 
 import android.content.Context;
@@ -15,12 +15,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.kavsoftware.kaveer.yourturf.CustomListView.RaceCardListView.RaceCardListView;
+import com.kavsoftware.kaveer.yourturf.CustomListView.NonimationListView.NominationListView;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
-import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.Race;
-import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.RaceCardViewModel;
-import com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard.RaceHorse;
+import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.NominationViewModel;
+import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.Race;
+import com.kavsoftware.kaveer.yourturf.ViewModel.Nomination.RaceHorse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,118 +38,119 @@ import java.util.concurrent.ExecutionException;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RaceCard extends Fragment {
+public class Nomination extends Fragment {
+
     HttpURLConnection connection = null;
     BufferedReader reader = null;
-    RaceCardViewModel raceCardList = new RaceCardViewModel();
+    NominationViewModel nominationList = new NominationViewModel();
     String homeUrl;
-    String raceCardUrl;
+    String nominationUrl;
 
-    ListView raceCardListView;
+    ListView nominationListView;
 
-    RaceCardListView adapter;
+    NominationListView adapter;
 
-    public RaceCard() {
+    public Nomination() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getActivity().setTitle("Race Card");
-        View view = inflater.inflate(R.layout.fragment_race_card, container, false);
+        getActivity().setTitle("Nomination");
+
+        View view = inflater.inflate(R.layout.fragment_nomination, container, false);
 
         homeUrl = getActivity().getBaseContext().getResources().getString(R.string.GetHomeScreenFromApEndPoint);
-        raceCardUrl = getActivity().getBaseContext().getResources().getString(R.string.GetRaceCardFromApEndPoint);
+        nominationUrl = getActivity().getBaseContext().getResources().getString(R.string.GetNominationFromApEndPoint);
 
-        String result = GetRaceCard();
+        String result = GetNomination();
+
         if(result == ""){
-            Toast messageBox = Toast.makeText(getActivity() , "No race card available" , Toast.LENGTH_LONG);
+            Toast messageBox = Toast.makeText(getActivity() , "No nomination available" , Toast.LENGTH_LONG);
             messageBox.show();
         }
         else {
             DeserializeJsonObject(result);
 
             GenerateListView(view);
-            
         }
+
+
 
         return view;
     }
 
     private void GenerateListView(View view) {
+
         Resources res = getResources();
-        raceCardListView = (ListView)view.findViewById(R.id.ListViewRaceCard);
+        nominationListView = (ListView)view.findViewById(R.id.ListViewNomination);
 
-        adapter = new RaceCardListView(getActivity(), raceCardList.getRace() ,res);
-        raceCardListView.setAdapter( adapter );
+        adapter = new NominationListView(getActivity(), nominationList.getRace() ,res);
+        nominationListView.setAdapter( adapter );
+
+
     }
 
-    public void onItemClick(int mPosition, ArrayList data) {
-        Object selectedRace = data.get(mPosition);
+    public void onItemClick(int mPosition, ArrayList data)
+    {
+        Object n = data.get(mPosition);
 
-        Race selectedRaceDetails = new Race();
-        selectedRaceDetails = (Race) selectedRace;
+        int f = mPosition;
     }
+
+
 
     private void DeserializeJsonObject(String result) {
         try {
             JSONObject jsonObject = new JSONObject(result);
-            JSONArray raceDetailsObject = jsonObject.getJSONArray("race");
+            JSONArray raceArray = jsonObject.getJSONArray("race");
 
-            raceCardList.setRaceCount(jsonObject.getInt("raceCount"));
+            nominationList.setRaceCount(jsonObject.getInt("raceCount"));
 
-            ArrayList<Race> races = new ArrayList<>();
+            ArrayList<Race> raceList = new ArrayList<>();
 
-            for(int i=0; i<raceDetailsObject.length(); i++) {
-                JSONObject raceObject = raceDetailsObject.getJSONObject(i);
-                JSONArray raceHorseDetailsObject = raceObject.getJSONArray("raceHorses");
+            for(int i=0; i<raceArray.length(); i++) {
+                JSONObject raceObject = raceArray.getJSONObject(i);
+                JSONArray raceHorsesArray = raceObject.getJSONArray("raceHorses");
 
-                Race raceDetails = new Race();
-                ArrayList<RaceHorse> raceHorses = new ArrayList<>();
+                Race item = new Race();
+                ArrayList<RaceHorse> raceHorseList = new ArrayList<>();
 
-                raceDetails.setRaceNumber(raceObject.getInt("raceNumber"));
-                raceDetails.setDistance(raceObject.getString("distance"));
-                raceDetails.setValueBenchmark(raceObject.getString("valueBenchmark"));
-                raceDetails.setTime(raceObject.getString("time"));
-                raceDetails.setRaceName(raceObject.getString("raceName"));
-                raceDetails.setHorseCount(raceObject.getInt("horseCount"));
+                item.setRaceNumber(raceObject.getInt("raceNumber"));
+                item.setDistance(raceObject.getString("distance"));
+                item.setValueBenchmark(raceObject.getString("valueBenchmark"));
+                item.setTime(raceObject.getString("time"));
+                item.setRaceName(raceObject.getString("raceName"));
+                item.setHorseCount(raceObject.getInt("horseCount"));
 
-                for(int count=0;count<raceHorseDetailsObject.length();count++){
-                    JSONObject raceHorseObject = raceHorseDetailsObject.getJSONObject(count);
-                    RaceHorse raceHorseDetails = new RaceHorse();
+                for(int count=0;count<raceHorsesArray.length();count++){
+                    JSONObject raceHorseObject = raceHorsesArray.getJSONObject(count);
+                    RaceHorse items = new RaceHorse();
 
-                    raceHorseDetails.setPerf(raceHorseObject.getString("perf"));
-                    raceHorseDetails.setAge(raceHorseObject.getInt("age"));
-                    raceHorseDetails.setGear(raceHorseObject.getString("gear"));
-                    raceHorseDetails.setWeight(raceHorseObject.getString("weight"));
-                    raceHorseDetails.setJockey(raceHorseObject.getString("jockey"));
-                    raceHorseDetails.setDraw(raceHorseObject.getInt("draw"));
-                    raceHorseDetails.setTimeFactor(raceHorseObject.getString("timeFactor"));
-                    raceHorseDetails.setHorseName(raceHorseObject.getString("horseName"));
-                    raceHorseDetails.setHorseNumber(raceHorseObject.getInt("horseNumber"));
-                    raceHorseDetails.setStable(raceHorseObject.getString("stable"));
-                    //raceHorseDetails.setHandicap(raceHorseObject.getInt("handicap"));
-                   // raceHorseDetails.setValue(raceHorseObject.getInt("value"));
-                    raceHorseDetails.setRaceNumber(raceHorseObject.getInt("raceNumber"));
+                    items.setHorseName(raceHorseObject.getString("horseName"));
+                    items.setHorseNumber(raceHorseObject.getInt("horseNumber"));
+                    items.setStable(raceHorseObject.getString("stable"));
+                   // items.setHandicap(raceHorseObject.getInt("handicap"));
+                   // items.setValue(raceHorseObject.getInt("value"));
+                    items.setRaceNumber(raceHorseObject.getInt("raceNumber"));
 
-                    raceHorses.add(raceHorseDetails);
+                    raceHorseList.add(items);
                 }
-                raceDetails.setRaceHorses(raceHorses);
-                races.add(raceDetails);
+
+                item.setRaceHorses(raceHorseList);
+                raceList.add(item);
             }
 
-            raceCardList.setRace(races);
+            nominationList.setRace(raceList);
 
-            System.out.print(raceCardList);
-
+            System.out.print(nominationList.getRaceCount());
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private String GetRaceCard() {
+    private String GetNomination() {
         int id;
         String result = "";
         Bundle bundle = this.getArguments();
@@ -157,11 +158,11 @@ public class RaceCard extends Fragment {
         try {
             if(isNetworkConnected()){
                 if (bundle == null){
-                    result =  new GetHomeScreenFromApi().execute(homeUrl, raceCardUrl).get();
+                    result =   new GetHomeScreenFromApi().execute(homeUrl, nominationUrl).get();
                 }
                 else {
                     id = bundle.getInt("id");
-                    result = new GetRaceCardFromApi().execute(raceCardUrl+id).get();
+                    result = new GetNominationFromApi().execute(nominationUrl+id).get();
                 }
             }
             else {
@@ -188,7 +189,7 @@ public class RaceCard extends Fragment {
         }
     }
 
-    private class GetRaceCardFromApi extends AsyncTask<String, String, String> {
+    private class GetNominationFromApi extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
             String jsonObject = "";
@@ -263,7 +264,7 @@ public class RaceCard extends Fragment {
                 }
 
                 String  jsonObjectHome = buffer.toString();
-                result = GetRaceCard(params[1], jsonObjectHome);
+                result = GetNomination(params[1], jsonObjectHome);
 
             } catch (Exception e) {
 
@@ -285,8 +286,8 @@ public class RaceCard extends Fragment {
             return result;
         }
 
-        private String GetRaceCard(String param, String jsonObjectHome) {
-            String jsonObjectRaceCard = "";
+        private String GetNomination(String param, String jsonObjectHome) {
+            String jsonObjectNomination = "";
             HomeScreenViewModel home = new HomeScreenViewModel();
 
             try {
@@ -294,10 +295,9 @@ public class RaceCard extends Fragment {
                 home.setIsRaceCardAvailable(parentObject.getBoolean("isRaceCardAvailable"));
                 home.setMeetingNumber(parentObject.getInt("meetingNumber"));
 
-               //  home.setIsRaceCardAvailable(true);
-                //to remove
+               // home.setIsRaceCardAvailable(true);
 
-                if(home.getIsRaceCardAvailable() == true){
+                if(home.getIsRaceCardAvailable() == false){
 
                     URL url = new URL(param + home.getMeetingNumber());
                     connection = (HttpURLConnection) url.openConnection();
@@ -312,14 +312,14 @@ public class RaceCard extends Fragment {
                         bufferz.append(line);
                     }
 
-                    jsonObjectRaceCard = bufferz.toString();
+                    jsonObjectNomination = bufferz.toString();
                 }
 
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
 
-            return jsonObjectRaceCard;
+            return jsonObjectNomination;
         }
 
         @Override

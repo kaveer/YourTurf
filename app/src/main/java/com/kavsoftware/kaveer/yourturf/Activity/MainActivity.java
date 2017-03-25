@@ -17,8 +17,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.kavsoftware.kaveer.yourturf.Fragment.Nomination;
-import com.kavsoftware.kaveer.yourturf.Fragment.RaceCard;
+import com.kavsoftware.kaveer.yourturf.Fragment.Nomination.Nomination;
+import com.kavsoftware.kaveer.yourturf.Fragment.RaceCard.RaceCard;
 import com.kavsoftware.kaveer.yourturf.R;
 import com.kavsoftware.kaveer.yourturf.ViewModel.HomeScreen.HomeScreenViewModel;
 

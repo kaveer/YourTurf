@@ -1,10 +1,12 @@
 package com.kavsoftware.kaveer.yourturf.ViewModel.RaceCard;
 
+import java.io.Serializable;
+
 /**
  * Created by kaveer on 3/18/2017.
  */
 
-public class RaceHorse {
+public class RaceHorse implements Serializable {
     public String perf;
     public Integer age;
     public String gear;
